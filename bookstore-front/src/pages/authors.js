@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function Authors() {
-  const [authors, setAuthors] = useState([]);
+  const [autores, setAuthors] = useState([]);
+  const [busqueda,setBusqueda] =  useState(""); 
+
+
 
   useEffect(() => {
     fetch("http://127.0.0.1:8080/api/authors")
@@ -12,7 +15,7 @@ export default function Authors() {
   }, []);
 
   const handleDelete = async (id) => {
-  const confirmDelete = confirm("¿Seguro que deseas eliminar este autor?");
+  const confirmDelete = confirm("¿Seguro que deseas eliminar este autor?"); //ESTO ES PAFA EL MENSAJE DE ELIMINAR AUTOR
   
   if (!confirmDelete) return;
 
@@ -20,8 +23,13 @@ export default function Authors() {
     method: "DELETE"
   });
 
-  setAuthors(authors.filter(a => a.id !== id));
+  setAuthors(autores.filter(a => a.id !== id));
 };
+
+const autoresFiltrados = autores.filter(autor =>
+  autor.name.toLowerCase().includes(busqueda.toLowerCase())
+);
+
 
 
   return (
@@ -32,7 +40,15 @@ export default function Authors() {
         <button>Crear Autor</button>
       </Link>
 
-      {authors.map(author => (
+    <h1> Buscar filtrado de autor </h1>
+
+    <input type="text" placeholder = "BUSCAR POR NOMBRE"  style={{margin: "10px 0",padding: "5px",border: "1px solid white",backgroundColor: "white",color: "red"
+  }} value = {busqueda} onChange = {e => setBusqueda(e.target.value) } />
+
+    {autoresFiltrados.length === 0 && <p>No se encontraron autores</p>}
+      
+
+      {autoresFiltrados.map(author => (
         <div key={author.id} style={{ border: "1px solid gray", margin: "10px", padding: "10px" }}>
           <h2>{author.name}</h2>
           <p>{author.birthDate}</p>
